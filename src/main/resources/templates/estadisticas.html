@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="index,follow">
+    <meta name="generator" content="GrapesJS Studio">
+    <!-- Estilos de DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body id="iut1">
+<div data-type-role="flex-row" id="iv85" class="gjs-plg-flex-row">
+    <div data-type-role="flex-column" id="isvfh" class="gjs-plg-flex-column">
+        <div id="idcnn">
+            <div class="page-box">
+                <div class="title-box">
+                    <h1 class="title-main">CineLista | Estadísticas</h1>
+                </div>
+
+                <nav class="menu-box">
+                    <a th:href="@{/}" class="menu-btn">Mi Lista</a>
+                    <a th:href="@{/anadirTitulo}" class="menu-btn">Añadir título</a>
+                    <a th:href="@{/estrenos}" class="menu-btn active">Estrenos</a>
+                    <a th:href="@{/estadisticas}" class="menu-btn active">Estadísticas</a>
+                </nav>
+
+                <p class="estadisticas-subtitle">Estadísticas de mi lista</p>
+
+                <!-- Barra de filtros superior -->
+                <div class="filtros-row">
+                    <input type="text" placeholder="Buscar título...." class="form-input input-buscador" />
+                    <select class="form-select select-filtro"><option>Género</option></select>
+                    <select class="form-select select-filtro"><option>Plataforma</option></select>
+                    <select class="form-select select-filtro"><option>Estado</option></select>
+                    <button type="button" class="basic-btn btn-filtrar">Filtrar</button>
+                </div>
+
+                <!-- Tabla de datos con tfoot incluido -->
+                <div class="table-wrap">
+                    <table id="tablaEstadisticas" class="simple-table" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Género</th>
+                            <th>Plataforma</th>
+                            <th>Estado</th>
+                            <th>Valoración</th>
+                            <th>Taquilla</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Datos cargados por AJAX -->
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="5" style="text-align:right">Total Taquilla:</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Contenedores de gráficos -->
+                <div class="graficos-container">
+                    <div class="grafico-box">
+                        <h3>Títulos por género</h3>
+                        <div class="grafico-placeholder">[Gráfico de sectores]</div>
+                    </div>
+                    <div class="grafico-box">
+                        <h3>Títulos por plataforma</h3>
+                        <div class="grafico-placeholder">[Gráfico de barras]</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts de jQuery y DataTables -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#tablaEstadisticas').DataTable({
+            ajax: {
+                url: '/api/estadisticas',
+                dataSrc: ''
+            },
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'Exportar a CSV',
+                    filename: 'informe_estadisticas_cinelista',
+                    charset: 'utf-8',
+                    bom: true,
+                    className: 'basic-btn'
+                }
+            ],
+            columns: [
+                { data: 'titulo' },
+                { data: 'genero' },
+                { data: 'plataforma' },
+                { data: 'estado' },
+                {
+                    data: 'valoracion',
+                    render: function (data, type, row) {
+                        if (type !== 'display') return data;
+                        const maxNota = 10;
+                        const numData = parseFloat(data) || 0;
+                        const pct = Math.round((numData / maxNota) * 100);
+                        return '<div class="barra-datos" style="width:' + pct + '%">' + data + '</div>';
+                    }
+                },
+                { data: 'taquilla' }
+            ],
+            footerCallback: function (row, data, start, end, display) {
+                var api = this.api();
+
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+
+                var total = api
+                    .column(5, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(5).footer()).html(total.toLocaleString() + ' €');
+            },
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>

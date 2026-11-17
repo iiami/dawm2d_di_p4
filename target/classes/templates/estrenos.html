@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <meta name="generator" content="GrapesJS Studio">
+  <link rel="stylesheet" href="/style.css">
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body id="iut1">
+<div data-type-role="flex-row" id="iv85" class="gjs-plg-flex-row">
+  <div data-type-role="flex-column" id="isvfh" class="gjs-plg-flex-column">
+    <div id="idcnn">
+      <div class="page-box">
+        <div class="title-box">
+          <h1 class="title-main">CineLista | Estrenos</h1>
+        </div>
+
+        <nav class="menu-box">
+          <a th:href="@{/}" class="menu-btn">Mi Lista</a>
+          <a th:href="@{/anadirTitulo}" class="menu-btn">Añadir título</a>
+          <a th:href="@{/estrenos}" class="menu-btn active">Estrenos</a>
+          <a th:href="@{/estadisticas}" class="menu-btn">Estadísticas</a>
+        </nav>
+
+        <p class="form-subtitle">Listado de Próximos Estrenos</p>
+
+        <div class="table-wrap" style="padding: 20px; background: #0b1f35;">
+          <ul id="lista-estrenos" style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 20px;">
+          </ul>
+        </div>
+
+        <div class="credits credits-form" style="margin-top: 40px;">
+          <p>Mayar Bouzidi P1</p>
+          <p>Ami Gumaneh P2</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/componentes/TarjetaEstreno.js" type="text/babel"></script>
+<script src="/js/estrenos.js" type="text/babel"></script>
+</body>
+
+</html>
